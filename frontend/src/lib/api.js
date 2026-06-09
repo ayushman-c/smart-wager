@@ -1,12 +1,15 @@
 import axios from 'axios'
-import toast from 'react-hot-toast'
+
+// In production (Vercel), VITE_API_URL is set to the backend deployment URL.
+// In local dev, the Vite proxy forwards /api → localhost:5000, so we use '/api'.
+const baseURL = import.meta.env.VITE_API_URL || '/api'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL,
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Request interceptor — attach token
+// Attach JWT token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -16,11 +19,10 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor — handle auth errors globally
+// Handle 401 globally — clear token and redirect to login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.message || 'Something went wrong'
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')

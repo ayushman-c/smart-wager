@@ -184,3 +184,51 @@ This project is suitable as a:
 - Final Year Project (partial)
 
 for Mechanical Engineering, Information Technology, or Computer Science departments.
+
+---
+
+## Deploying to Vercel
+
+Both frontend and backend deploy from the same repo using `vercel.json` at the root.
+
+### Step 1 — Push to GitHub
+```bash
+git init
+git add .
+git commit -m "initial commit"
+git remote add origin https://github.com/your-username/smart-wager.git
+git push -u origin main
+```
+
+### Step 2 — Import on Vercel
+1. Go to [vercel.com](https://vercel.com) → **Add New Project**
+2. Import your GitHub repo
+3. Leave **Root Directory** blank (Vercel reads `vercel.json` at root)
+4. Click **Deploy**
+
+### Step 3 — Add Environment Variables on Vercel
+In your Vercel project → **Settings → Environment Variables**, add:
+
+| Key | Value |
+|---|---|
+| `MONGO_URI` | your MongoDB Atlas connection string |
+| `JWT_SECRET` | your secret key |
+| `JWT_EXPIRE` | `7d` |
+| `CLOUDINARY_CLOUD_NAME` | from Cloudinary dashboard |
+| `CLOUDINARY_API_KEY` | from Cloudinary dashboard |
+| `CLOUDINARY_API_SECRET` | from Cloudinary dashboard |
+| `CLIENT_URL` | your Vercel frontend URL e.g. `https://smart-wager.vercel.app` |
+| `NODE_ENV` | `production` |
+
+### Step 4 — Set `VITE_API_URL` for the frontend
+In the same **Environment Variables** page, also add:
+
+| Key | Value |
+|---|---|
+| `VITE_API_URL` | `https://smart-wager.vercel.app/api` |
+
+> Replace `smart-wager.vercel.app` with your actual Vercel domain.
+
+### Step 5 — Redeploy
+After adding all environment variables, trigger a redeploy from the Vercel dashboard.
+
