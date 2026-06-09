@@ -22,9 +22,23 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS
+// CORS — allow local dev + any Vercel deployment + explicit CLIENT_URL
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  process.env.CLIENT_URL,
+].filter(Boolean)
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow server-to-server / Postman (no origin header)
+    if (!origin) return callback(null, true)
+    // Allow anything on *.vercel.app
+    if (origin.endsWith('.vercel.app')) return callback(null, true)
+    // Allow explicitly listed origins
+    if (allowedOrigins.includes(origin)) return callback(null, true)
+    callback(new Error(`CORS: origin ${origin} not allowed`))
+  },
   credentials: true,
 }));
 
