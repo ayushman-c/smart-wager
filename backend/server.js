@@ -23,21 +23,8 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS
-const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
-  'http://localhost:5173',
-  'http://localhost:4173',
-]
-
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, curl, server-to-server)
-    if (!origin) return callback(null, true)
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      return callback(null, true)
-    }
-    callback(new Error(`CORS blocked for origin: ${origin}`))
-  },
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true,
 }));
 
