@@ -26,6 +26,7 @@ app.use('/api/', limiter);
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
+  'https://smart-wedger.netlify.app',
   process.env.CLIENT_URL,
 ].filter(Boolean)
 
