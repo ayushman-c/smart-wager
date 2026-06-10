@@ -22,22 +22,32 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS — allow local dev + any Vercel deployment + explicit CLIENT_URL
+// CORS — allow local dev, netlify, any Vercel deployment, Render backend and explicit CLIENT_URL
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
   'http://localhost:4173',
+  'http://127.0.0.1:4173',
   'https://smart-wedger.netlify.app',
+  'https://smart-wager.onrender.com',
   process.env.CLIENT_URL,
 ].filter(Boolean)
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow server-to-server / Postman (no origin header)
-    if (!origin) return callback(null, true)
+    // Allow server-to-server / Postman (no origin header) or literal "null"
+    if (!origin || origin === 'null') return callback(null, true)
     // Allow anything on *.vercel.app
-    if (origin.endsWith('.vercel.app')) return callback(null, true)
+    try {
+      if (origin.endsWith('.vercel.app')) return callback(null, true)
+    } catch (e) {
+      // if origin is not a string for some reason, continue to rejection
+    }
     // Allow explicitly listed origins
     if (allowedOrigins.includes(origin)) return callback(null, true)
+    console.warn(`CORS blocked origin: ${origin}`)
     callback(new Error(`CORS: origin ${origin} not allowed`))
   },
   credentials: true,
